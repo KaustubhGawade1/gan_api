@@ -28,7 +28,7 @@ class ModelManager:
             noise_dim=settings.NOISE_DIM,
             text_embedding_dim=settings.TEXT_EMBEDDING_DIM
         )
-        self._generator.load_weights(settings.MODEL_WEIGHTS_PATH)
+        self._generator.load_weights(settings.MODEL_WEIGHTS_PATH, device=settings.DEVICE)
         self._generator.to(settings.DEVICE)
         self._generator.eval()
         

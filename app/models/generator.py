@@ -113,11 +113,11 @@ class Generator(nn.Module):
         
         return image
     
-    def load_weights(self, path: str) -> None:
+    def load_weights(self, path: str, device: str = "cpu") -> None:
         """Load pre-trained weights from file."""
         weights_path = Path(path)
         if weights_path.exists():
-            state_dict = torch.load(weights_path, map_location=self.device_type)
+            state_dict = torch.load(weights_path, map_location=device)
             self.load_state_dict(state_dict, strict=False)
         else:
             print(f"Warning: Weights file not found at {path}. Using random initialization.")

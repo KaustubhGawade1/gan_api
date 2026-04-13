@@ -78,6 +78,7 @@ class InferenceService:
         
         # Encode text prompt
         text_embedding = self.encode_text(prompt)  # (1, 512)
+        text_embedding = text_embedding.to(self.device)
         
         # Generate noise
         batch_size = 1
