@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Botanical Synthesizer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@1,300&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body { margin: 0; background: #0a0c0b; }
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+@keyframes sweep{0%{background-position:-300px 0}100%{background-position:300px 0}}
+@keyframes scan{0%{top:0%;opacity:0.7}100%{top:100%;opacity:0}}
+@keyframes float{0%{transform:translateY(0);opacity:0}20%{opacity:0.5}80%{opacity:0.2}100%{transform:translateY(-60px);opacity:0}}
+
+/* Custom Scrollbar for Textarea */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a332a; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div style="background:#0a0c0b;min-height:100vh;padding:32px 20px;position:relative;overflow:hidden;font-family:'JetBrains Mono',monospace;">
+
+<div style="position:absolute;inset:0;background-image:linear-gradient(#0f12101a 1px,transparent 1px),linear-gradient(90deg,#0f12101a 1px,transparent 1px);background-size:36px 36px;pointer-events:none;"></div>
+
+<div style="position:absolute;bottom:30%;left:15%;width:2px;height:2px;border-radius:50%;background:#7ab87a;animation:float 3s 0s ease-in infinite;"></div>
+<div style="position:absolute;bottom:30%;left:35%;width:3px;height:3px;border-radius:50%;background:#7ab87a;animation:float 4s 0.8s ease-in infinite;"></div>
+<div style="position:absolute;bottom:30%;left:60%;width:1.5px;height:1.5px;border-radius:50%;background:#7ab87a;animation:float 3.5s 1.5s ease-in infinite;"></div>
+<div style="position:absolute;bottom:30%;left:80%;width:2px;height:2px;border-radius:50%;background:#7ab87a;animation:float 4.2s 0.3s ease-in infinite;"></div>
+
+<div style="position:relative;max-width:440px;margin:0 auto;z-index:1;">
+
+  <div style="display:flex;justify-content:center;margin-bottom:18px;">
+    <div style="display:inline-flex;align-items:center;gap:6px;background:#5a8f5a18;border:1px solid #5a8f5a44;border-radius:2px;padding:4px 12px;">
+      <div id="status-dot" style="width:5px;height:5px;border-radius:50%;background:#7ab87a;"></div>
+      <span id="status-text" style="font-size:9px;letter-spacing:0.2em;color:#7ab87a;">GAN · PYTORCH · READY</span>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:28px;">
+    <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:36px;color:#e8e6df;line-height:1.1;letter-spacing:-0.01em;">AI Botanical</h1>
+    <h1 style="font-family:'DM Serif Display',serif;font-weight:400;font-style:italic;font-size:36px;color:#c8943a;line-height:1.1;letter-spacing:-0.01em;margin-bottom:12px;">Synthesizer</h1>
+    <p style="font-family:'Crimson Pro',serif;font-style:italic;font-size:14px;color:#9ea89b;">Describe a flower. The network will render it from mathematics.</p>
+  </div>
+
+  <div id="image-frame" style="position:relative;max-width:320px;margin:0 auto 24px;aspect-ratio:1;background:#161a15;border:1px solid #2a332a;border-radius:4px;overflow:hidden;">
+    <svg style="position:absolute;top:0;left:0;z-index:10;" width="16" height="16" viewBox="0 0 16 16"><path d="M0,16 L0,0 L16,0" stroke="#3d4f3a" stroke-width="1.5" fill="none"/></svg>
+    <svg style="position:absolute;top:0;right:0;z-index:10;" width="16" height="16" viewBox="0 0 16 16"><path d="M16,16 L16,0 L0,0" stroke="#3d4f3a" stroke-width="1.5" fill="none"/></svg>
+    <svg style="position:absolute;bottom:0;right:0;z-index:10;" width="16" height="16" viewBox="0 0 16 16"><path d="M16,0 L16,16 L0,16" stroke="#3d4f3a" stroke-width="1.5" fill="none"/></svg>
+    <svg style="position:absolute;bottom:0;left:0;z-index:10;" width="16" height="16" viewBox="0 0 16 16"><path d="M0,0 L0,16 L16,16" stroke="#3d4f3a" stroke-width="1.5" fill="none"/></svg>
+
+    <div id="image-content" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+       <p style="font-size:9px;color:#3d4f3a;letter-spacing:0.18em;">AWAITING PROMPT</p>
+    </div>
+  </div>
+
+  <div style="background:#161a15;border:1px solid #3d4f3a;border-radius:2px;margin-bottom:10px;position:relative;">
+    <svg style="position:absolute;top:0;left:0;" width="14" height="14" viewBox="0 0 14 14"><path d="M0,14 L0,0 L14,0" stroke="#c8943a" stroke-width="1.2" fill="none"/></svg>
+    <svg style="position:absolute;top:0;right:0;" width="14" height="14" viewBox="0 0 14 14"><path d="M14,14 L14,0 L0,0" stroke="#c8943a" stroke-width="1.2" fill="none"/></svg>
+    <svg style="position:absolute;bottom:0;right:0;" width="14" height="14" viewBox="0 0 14 14"><path d="M14,0 L14,14 L0,14" stroke="#c8943a" stroke-width="1.2" fill="none"/></svg>
+    <svg style="position:absolute;bottom:0;left:0;" width="14" height="14" viewBox="0 0 14 14"><path d="M0,0 L0,14 L14,14" stroke="#c8943a" stroke-width="1.2" fill="none"/></svg>
+
+    <div style="display:flex;align-items:center;gap:6px;padding:8px 12px 0;">
+      <span style="font-size:9px;letter-spacing:0.16em;color:#5c6659;">BOTANICAL PROMPT</span>
+    </div>
+    
+    <textarea id="prompt-input" placeholder="A bright yellow flower with long delicate petals..." style="width:100%;background:transparent;border:none;outline:none;resize:none;padding:10px 12px 6px;font-size:12px;color:#e8e6df;line-height:1.6;min-height:60px;font-family:inherit;"></textarea>
+    
+  </div>
+
+  <button id="generate-btn" style="width:100%;background:#1d2420;border:1px solid #3d4f3a;border-radius:2px;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;cursor:pointer;transition:background 0.2s;">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e8e6df" stroke-width="1.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+    <span style="font-size:11px;letter-spacing:0.2em;color:#e8e6df;font-weight:500;">SYNTHESIZE</span>
+  </button>
+
+  <div>
+    <p style="font-size:9px;letter-spacing:0.18em;color:#5c6659;margin-bottom:8px;">TRY AN EXAMPLE</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      <button class="example-btn" style="background:transparent;border:1px solid #2a332a;border-radius:2px;padding:4px 9px;font-size:10px;color:#9ea89b;cursor:pointer;font-family:inherit;">A deep red rose with velvet petals</button>
+      <button class="example-btn" style="background:transparent;border:1px solid #2a332a;border-radius:2px;padding:4px 9px;font-size:10px;color:#9ea89b;cursor:pointer;font-family:inherit;">Pale blue hydrangea clusters</button>
+      <button class="example-btn" style="background:transparent;border:1px solid #2a332a;border-radius:2px;padding:4px 9px;font-size:10px;color:#9ea89b;cursor:pointer;font-family:inherit;">Bright sunflower against dark sky</button>
+    </div>
+  </div>
+
+  <div style="margin-top:28px;padding-top:16px;border-top:1px solid #2a332a;display:flex;justify-content:space-between;">
+    <span style="font-size:9px;letter-spacing:0.15em;color:#5c6659;">CONDITIONAL T2I GAN</span>
+    <span style="font-size:9px;letter-spacing:0.15em;color:#5c6659;">FastAPI · localhost:8000</span>
+  </div>
+</div>
+</div>
+
+<script>
+  const generateBtn = document.getElementById('generate-btn');
+  const promptInput = document.getElementById('prompt-input');
+  const imageContent = document.getElementById('image-content');
+  const statusDot = document.getElementById('status-dot');
+  const statusText = document.getElementById('status-text');
+  const exampleBtns = document.querySelectorAll('.example-btn');
+
+  // Loading skeleton HTML
+  const skeletonHTML = `
+    <div style="width:100%;height:100%;background:linear-gradient(90deg,#161a15 25%,#1d2420 50%,#161a15 75%);background-size:300px 100%;animation:sweep 1.6s linear infinite;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;">
+      <div style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#c8943a88,transparent);animation:scan 1.8s linear infinite;"></div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8943a" stroke-width="2" stroke-linecap="round" style="animation:pulse 0.8s linear infinite;">
+        <circle cx="12" cy="12" r="10" stroke-opacity="0.2"/>
+        <path d="M12 2 A10 10 0 0 1 22 12"/>
+      </svg>
+      <p style="font-size:9px;color:#5c6659;letter-spacing:0.18em;">SYNTHESIZING</p>
+    </div>
+  `;
+
+  // Example button click handlers
+  exampleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      promptInput.value = btn.innerText;
+    });
+  });
+
+  generateBtn.addEventListener('click', async () => {
+    const prompt = promptInput.value.trim();
+    if (!prompt) return;
+
+    // Set Loading State
+    generateBtn.disabled = true;
+    generateBtn.style.opacity = '0.5';
+    imageContent.innerHTML = skeletonHTML;
+    statusDot.style.animation = 'pulse 1s ease-in-out infinite';
+    statusDot.style.background = '#c8943a';
+    statusText.innerText = 'GAN · PYTORCH · INFERENCING';
+    statusText.style.color = '#c8943a';
+
+    try {
+      // THE CRITICAL BLOB FETCH LOGIC
+      const response = await fetch('http://localhost:8000/api/v1/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          prompt: prompt,
+          seed: 42,
+          guidance_scale: 1.0
+        })
+      });
+
+      if (!response.ok) throw new Error('API request failed');
+
+      // Convert raw bytes to a Blob, then to an Object URL
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+
+      // Render the image (using pixelated rendering for 64x64 upscaling)
+      imageContent.innerHTML = `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;">`;
+      
+      // Reset Badge to Success
+      statusDot.style.animation = 'none';
+      statusDot.style.background = '#7ab87a';
+      statusText.innerText = 'GAN · PYTORCH · ACTIVE';
+      statusText.style.color = '#7ab87a';
+
+    } catch (error) {
+      console.error(error);
+      imageContent.innerHTML = `<p style="font-size:9px;color:#cc5555;letter-spacing:0.18em;">SYNTHESIS FAILED</p>`;
+      
+      // Reset Badge to Error
+      statusDot.style.animation = 'none';
+      statusDot.style.background = '#cc5555';
+      statusText.innerText = 'GAN · PYTORCH · ERROR';
+      statusText.style.color = '#cc5555';
+    } finally {
+      // Re-enable button
+      generateBtn.disabled = false;
+      generateBtn.style.opacity = '1';
+    }
+  });
+</script>
+</body>
+</html>
