@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZIPMiddleware
+from starlette.middleware.gzip import GZIPMiddleware
 
 from app.api.routes import router
 from app.core.config import settings
